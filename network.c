@@ -28,8 +28,7 @@ int GetZaprosToBot( void )
 int iResult = 0;
 WSADATA wsaData;
 SOCKET ConnectSocket = INVALID_SOCKET;
-//char *sendbuf = "https://api.telegram.org/bot407153638:AAGLP8QI3RN78dClmfzI-f7hslQ5PGzmTbQ/getUpdates";
-//char *sendbuf = "/bot407153638:AAGLP8QI3RN78dClmfzI-f7hslQ5PGzmTbQ/getUpdates";
+
 char *sendbuf = "GET /index.html HTTP/1.1\n
 				 Host: 192.168.4.254\n
 				 User-Agent: Mozilla/5.0 (X11; U; Linux i686; ru; rv:1.9b5) Gecko/2008050509 Firefox/3.0b5\n
