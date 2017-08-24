@@ -46,6 +46,7 @@ void logFinish_Programm();
 // -------------------------------- net function prototypes --------------------------------------
 
 int GetZaprosToBot( void );
+int GetSSLZaprosToBot( void );
 
 
 

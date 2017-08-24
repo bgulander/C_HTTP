@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------------------------------- //
 #//Project:		Telegram Bot test programm
-#//File:		network.c
+#//File:		networkssl.c
 #//Date:		22.08.2017
 #//Author:		T.O.
 #//Version:		1.0
@@ -22,20 +22,39 @@ struct addrinfo hints;
 
 // --------------------------------------------------------------------------------------------------------- 
 
-int GetZaprosToBot( void )
+int GetSSLZaprosToBot( void )
 {
 
 int iResult = 0;
 WSADATA wsaData;
 SOCKET ConnectSocket = INVALID_SOCKET;
-//char *sendbuf = "https://api.telegram.org/bot407153638:AAGLP8QI3RN78dClmfzI-f7hslQ5PGzmTbQ/getUpdates";
-//char *sendbuf = "/bot407153638:AAGLP8QI3RN78dClmfzI-f7hslQ5PGzmTbQ/getUpdates";
- char *sendbuf = "GET / HTTP/1.1\r\nHost: ya.ru\r\nUser-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:55.0) Gecko/20100101Firefox/55.0\r\nAccept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3\r\n Accept-Encoding: gzip, deflate\r\nDNT: 1\r\nConnection: keep-alive\r\nUpgrade-Insecure-Requests: 1\r\nCache-Control: max-age=0\r\n\r\n";
 char recvbuf[DEFAULT_RECEIVE_BUFFER];
 int recvlen = DEFAULT_RECEIVE_BUFFER;
 int i;
 unsigned long traffic = 0;
 unsigned long rpacket = 0;
+
+static unsigned char clientHello[] = 
+{
+	0x16, // handshake
+	0x03, 0x03, // version (TLS 1.2)
+	0x00, 0x2F, // length of handshake
+	// handshake
+	0x01, // handshake type (client hello)
+	0x00, 0x00, 0x2B, // length of handshake payload 
+	// client hello
+	0x03, 0x03, // highest version supported (TLS 1.2)
+	0x45, 0xFA, 0x01, 0x19, 0x74, 0x55, 0x18, 0x36, 
+	0x42, 0x05, 0xC1, 0xDD, 0x4A, 0x21, 0x80, 0x80, 
+	0xEC, 0x37, 0x11, 0x93, 0x16, 0xF4, 0x66, 0x00, 
+	0x12, 0x67, 0xAB, 0xBA, 0xFF, 0x29, 0x13, 0x9E, // 32 random bytes
+	0x00, // session id length
+	0x00, 0x02, // chiper suites length
+	0x00, 0x3D, // RSA_WITH_AES_256_CBC_SHA256
+	0x01, // compression methods length
+	0x00,  // no compression
+	0x00, 0x00 // extensions length
+};
 
 
 
@@ -56,7 +75,7 @@ unsigned long rpacket = 0;
 
     // Resolve the server address and port
 	//iResult = getaddrinfo( DEFAULT_SERVER_ADDRESS, DEFAULT_HTTPS_PORT, &hints, &result );
-	iResult = getaddrinfo( "ya.ru", DEFAULT_HTTPS_PORT, &hints, &result );
+	iResult = getaddrinfo( "149.154.167.99", DEFAULT_HTTPS_PORT, &hints, &result );
     if( iResult != 0 )
 	{
         printf( "getaddrinfo failed with error: %d\n", iResult );
@@ -85,10 +104,12 @@ unsigned long rpacket = 0;
 		}
 		break;
 	}
-	
 	printf( "IP address: %hhu.%hhu.%hhu.%hhu \n", ptrres->ai_addr->sa_data[2], ptrres->ai_addr->sa_data[3], ptrres->ai_addr->sa_data[4], ptrres->ai_addr->sa_data[5] );
+	
+	
 	// -------------------------- send data ---------------------------------------------------------------
-	iResult = send( ConnectSocket, sendbuf, (int)strlen(sendbuf), 0 );
+	//iResult = send( ConnectSocket, clientHello, (int)strlen(clientHello), 0 );
+	iResult = send( ConnectSocket, clientHello, 52, 0 );
     if(iResult == SOCKET_ERROR)
 	{
         printf("send failed with error: %d\n", WSAGetLastError());
@@ -98,19 +119,9 @@ unsigned long rpacket = 0;
     }	
 	printf( "Bytes Sent: %ld\n\n", iResult );	
 	
-	printf( "%s\n\n", sendbuf );
+	//printf( "%s\n\n", clientHello );
 	
-	
-	// shutdown the connection since no more data will be sent
-  /*  iResult = shutdown( ConnectSocket, SD_SEND );
-    if( iResult == SOCKET_ERROR )
-	{
-        printf("shutdown failed with error: %d\n", WSAGetLastError());
-        closesocket(ConnectSocket);
-        WSACleanup();
-        return ERR_CONNECT+4;
-    }  */
-	
+
 	// ---------------------- Receive until the peer closes the connection -----------------
     do{
         iResult = recv( ConnectSocket, recvbuf, recvlen, 0 );
@@ -134,6 +145,8 @@ unsigned long rpacket = 0;
 			}
 		}
     }while( iResult > 0 );	
+
+
 	
 	// shutdown the connection since no more data will be sent
     iResult = shutdown( ConnectSocket, SD_SEND );
@@ -149,12 +162,10 @@ unsigned long rpacket = 0;
 	// close socket
 	WSACleanup();
 	
+	
 }
-
-
-// ----------------- end function GetZaprosToBot --------------------------------- //
 
 
 
 // --------------------------------------------------------------------------------------------- //
-// -------- END of FILE NetWork.c -------------------------------------------------------------- //
+// -------- END of FILE NetWorkSSL.c -------------------------------------------------------------- //

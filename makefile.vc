@@ -36,9 +36,12 @@ STRINGWORK=stringwork
 TELEGRAMBOT=telegrambot
 LOG_FILES=log_files
 NETWORK=network
+NETWORKSSL=networkssl
 
 
-OBJS=$(STRINGWORK).obj $(LOG_FILES).obj $(NETWORK).obj
+
+#OBJS=$(STRINGWORK).obj $(LOG_FILES).obj $(NETWORK).obj $(NETWORKSSL).obj
+OBJS=$(STRINGWORK).obj $(LOG_FILES).obj $(NETWORKSSL).obj
  
  
 COMMON_FILES=makefile.vc
@@ -51,6 +54,9 @@ $(LOG_FILES).obj: $(LOG_FILES).c  $(DEPS)
 
 $(NETWORK).obj: $(NETWORK).c  $(DEPS)
 	$(CC) -c $(USER_DEFINES) -Fo$(NETWORK).obj $(CFLAGS1) $(NETWORK).c
+
+$(NETWORKSSL).obj: $(NETWORKSSL).c  $(DEPS)
+	$(CC) -c $(USER_DEFINES) -Fo$(NETWORKSSL).obj $(CFLAGS1) $(NETWORKSSL).c
 	
 $(TARGET).exe: $(TELEGRAMBOT).c $(DEPS) $(OBJS) 
 	$(CC) -Fe$(TARGET).exe $(USER_DEFINES) $(CFLAGS1) $(TELEGRAMBOT).c $(OBJS) $(WIN_LIBS) $(LD_FLAGS)

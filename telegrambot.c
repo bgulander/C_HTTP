@@ -28,7 +28,8 @@ void main( int argc, char *argv[] )
 	// main cycle periodic question
 	
 		// read incoming data
-		Result = GetZaprosToBot();
+		//Result = GetZaprosToBot();
+		Result = GetSSLZaprosToBot();
 		
 		// generation answer
 /*		if( result == ERR_SUCCESS )
