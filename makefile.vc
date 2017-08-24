@@ -1,0 +1,64 @@
+# ---------------------------------------------------------------------
+# Project:	template for all programm
+# File:		makefile.vc
+# Data:		21/08/2017
+# Author:	O.V.Trushkin
+# Description:  makefile
+# ---------------------------------------------------------------------
+
+
+TARGET=telegrambot
+
+all: $(TARGET).exe 
+
+help:
+	@echo "The following targets are defined:"
+	@echo "all             --  build all (default)"
+	@echo "clean           --  clean library"
+
+AR=lib
+DYNLINK=link
+CC=cl
+CP=copy
+RM=del
+
+#INC_DIR=..
+#PT_FLAGS=-O2
+#CFLAGS1=$(OPT_FLAGS) -I$(INC_DIR)
+CFLAGS1=$(OPT_FLAGS)
+CFLAGS2=$(OPT_FLAGS) -I$(INC_DIR)
+WIN_LIBS=advapi32.lib ws2_32.lib
+#WIN_LIBS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib
+LD_FLAGS=
+
+
+STRINGWORK=stringwork
+TELEGRAMBOT=telegrambot
+LOG_FILES=log_files
+NETWORK=network
+
+
+OBJS=$(STRINGWORK).obj $(LOG_FILES).obj $(NETWORK).obj
+ 
+ 
+COMMON_FILES=makefile.vc
+
+$(STRINGWORK).obj: $(STRINGWORK).c  $(DEPS)
+	$(CC) -c $(USER_DEFINES) -Fo$(STRINGWORK).obj $(CFLAGS1) $(STRINGWORK).c
+
+$(LOG_FILES).obj: $(LOG_FILES).c  $(DEPS)
+	$(CC) -c $(USER_DEFINES) -Fo$(LOG_FILES).obj $(CFLAGS1) $(LOG_FILES).c
+
+$(NETWORK).obj: $(NETWORK).c  $(DEPS)
+	$(CC) -c $(USER_DEFINES) -Fo$(NETWORK).obj $(CFLAGS1) $(NETWORK).c
+	
+$(TARGET).exe: $(TELEGRAMBOT).c $(DEPS) $(OBJS) 
+	$(CC) -Fe$(TARGET).exe $(USER_DEFINES) $(CFLAGS1) $(TELEGRAMBOT).c $(OBJS) $(WIN_LIBS) $(LD_FLAGS)
+
+
+clean:
+	$(RM)  *.obj
+	$(RM)  *.exe
+	$(RM)  *.log
+
+# End of file.
