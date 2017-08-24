@@ -28,8 +28,7 @@ int GetZaprosToBot( void )
 int iResult = 0;
 WSADATA wsaData;
 SOCKET ConnectSocket = INVALID_SOCKET;
-//char *sendbuf = "https://api.telegram.org/bot407153638:AAGLP8QI3RN78dClmfzI-f7hslQ5PGzmTbQ/getUpdates";
-//char *sendbuf = "/bot407153638:AAGLP8QI3RN78dClmfzI-f7hslQ5PGzmTbQ/getUpdates";
+
  char *sendbuf = "GET / HTTP/1.1\r\nHost: ya.ru\r\nUser-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:55.0) Gecko/20100101Firefox/55.0\r\nAccept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3\r\n Accept-Encoding: gzip, deflate\r\nDNT: 1\r\nConnection: keep-alive\r\nUpgrade-Insecure-Requests: 1\r\nCache-Control: max-age=0\r\n\r\n";
 char recvbuf[DEFAULT_RECEIVE_BUFFER];
 int recvlen = DEFAULT_RECEIVE_BUFFER;
