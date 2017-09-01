@@ -10,8 +10,17 @@
 #-----------------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <windows.h>
+
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/pem.h>
+#include <openssl/x509.h>
+#include <openssl/crypto.h>
+
 
 #include "telegrambot.h"
 
@@ -28,8 +37,6 @@ int GetZaprosToBot( void )
 int iResult = 0;
 WSADATA wsaData;
 SOCKET ConnectSocket = INVALID_SOCKET;
-
- char *sendbuf = "GET / HTTP/1.1\r\nHost: ya.ru\r\nUser-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:55.0) Gecko/20100101Firefox/55.0\r\nAccept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3\r\n Accept-Encoding: gzip, deflate\r\nDNT: 1\r\nConnection: keep-alive\r\nUpgrade-Insecure-Requests: 1\r\nCache-Control: max-age=0\r\n\r\n";
 char recvbuf[DEFAULT_RECEIVE_BUFFER];
 int recvlen = DEFAULT_RECEIVE_BUFFER;
 int i;
@@ -37,6 +44,26 @@ unsigned long traffic = 0;
 unsigned long rpacket = 0;
 
 
+const SSL_METHOD *meth;
+SSL_CTX *ctx;
+SSL *ssl;
+
+
+
+	// -------------------------------------------------------------------------------
+	/* ---------------------------------------------------------- *
+	* These function calls initialize openssl for correct work.  * 	* initialize SSL library and register algorithms             *
+	* ---------------------------------------------------------- */
+	SSLeay_add_ssl_algorithms();
+	meth = (SSL_METHOD *)SSLv3_client_method();
+	SSL_load_error_strings();
+	ctx = SSL_CTX_new (meth);                        
+
+	if( ctx == NULL )
+	{
+		printf( "error in SSL_CTX_new function. Return NULL. \n" );
+		return 10;
+	}
 
     // Initialize Winsock
     iResult = WSAStartup( MAKEWORD(2,2), &wsaData );
@@ -86,8 +113,23 @@ unsigned long rpacket = 0;
 	}
 	
 	printf( "IP address: %hhu.%hhu.%hhu.%hhu \n", ptrres->ai_addr->sa_data[2], ptrres->ai_addr->sa_data[3], ptrres->ai_addr->sa_data[4], ptrres->ai_addr->sa_data[5] );
+	
+	
+	ssl = SSL_new (ctx);                         
+	if( ssl == NULL )
+	{
+		printf( "SSL_new error! \n" );
+		return 11;
+	}
+	else
+	{
+		printf( "SSL_new success!\n" );
+	}
+	//SSL_set_fd(ssl, sd);
+	//err = SSL_connect (ssl);                     CHK_SSL(err);
+
 	// -------------------------- send data ---------------------------------------------------------------
-	iResult = send( ConnectSocket, sendbuf, (int)strlen(sendbuf), 0 );
+	/*iResult = send( ConnectSocket, sendbuf, (int)strlen(sendbuf), 0 );
     if(iResult == SOCKET_ERROR)
 	{
         printf("send failed with error: %d\n", WSAGetLastError());
@@ -99,16 +141,6 @@ unsigned long rpacket = 0;
 	
 	printf( "%s\n\n", sendbuf );
 	
-	
-	// shutdown the connection since no more data will be sent
-  /*  iResult = shutdown( ConnectSocket, SD_SEND );
-    if( iResult == SOCKET_ERROR )
-	{
-        printf("shutdown failed with error: %d\n", WSAGetLastError());
-        closesocket(ConnectSocket);
-        WSACleanup();
-        return ERR_CONNECT+4;
-    }  */
 	
 	// ---------------------- Receive until the peer closes the connection -----------------
     do{
@@ -133,7 +165,7 @@ unsigned long rpacket = 0;
 			}
 		}
     }while( iResult > 0 );	
-	
+	*/
 	// shutdown the connection since no more data will be sent
     iResult = shutdown( ConnectSocket, SD_SEND );
     if( iResult == SOCKET_ERROR )
@@ -143,7 +175,7 @@ unsigned long rpacket = 0;
         WSACleanup();
         return ERR_CONNECT+4;
     }
-	printf( "Closed Connection. Total recived bytes: %u  Packet received %u.\n", traffic, rpacket );
+	printf( "Closed Connection. Total recived bytes: %u  Packet received %u.\n", traffic, rpacket ); 
 
 	// close socket
 	WSACleanup();

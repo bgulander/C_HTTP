@@ -23,11 +23,14 @@ CP=copy
 RM=del
 
 #INC_DIR=..
+OPEN_SSL_LIB_DIR="C:\OpenSSL-Win64\lib"
 #PT_FLAGS=-O2
 #CFLAGS1=$(OPT_FLAGS) -I$(INC_DIR)
 CFLAGS1=$(OPT_FLAGS)
 CFLAGS2=$(OPT_FLAGS) -I$(INC_DIR)
-WIN_LIBS=advapi32.lib ws2_32.lib
+WIN_LIBS=advapi32.lib ws2_32.lib user32.lib crypt32.lib $(OPEN_SSL_LIB_DIR)\VC\static\libcrypto64MT.lib $(OPEN_SSL_LIB_DIR)\VC\static\libssl64MT.lib
+
+#WIN_LIBS=advapi32.lib ws2_32.lib $(OPEN_SSL_LIB_DIR)\VC\static\libcrypto64MT.lib $(OPEN_SSL_LIB_DIR)\VC\static\libssl64MT.lib $(OPEN_SSL_LIB_DIR)\openssl.lib
 #WIN_LIBS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib
 LD_FLAGS=
 
@@ -40,8 +43,8 @@ NETWORKSSL=networkssl
 
 
 
-#OBJS=$(STRINGWORK).obj $(LOG_FILES).obj $(NETWORK).obj $(NETWORKSSL).obj
-OBJS=$(STRINGWORK).obj $(LOG_FILES).obj $(NETWORKSSL).obj
+OBJS=$(STRINGWORK).obj $(LOG_FILES).obj $(NETWORK).obj 
+#OBJS=$(STRINGWORK).obj $(LOG_FILES).obj $(NETWORKSSL).obj
  
  
 COMMON_FILES=makefile.vc
